@@ -50,7 +50,8 @@ img{
     gap: 10px;
 }
 .logo{
-    width: 150px;
+    width: 200px;
+    padding-top: 15px;
 }
 
 .text-primary{
