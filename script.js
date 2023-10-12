@@ -10,7 +10,6 @@ const swiper = new Swiper('.swiper', {
         modifier: 1,
         slideShadows: true,
     },
-   
 
     // If we need pagination
     pagination: {
@@ -30,18 +29,7 @@ const swiper = new Swiper('.swiper', {
 });
 
 
-// let cart = [
-//     {
-//         name: "Pizza 1",
-//         price: 123,
-//         amount:1
-//     },
-//     {
-//         name: "Desert 1",
-//         price: 60,
-//         amount: 2
-//     }
-// ]
+// Корзина
 
 let cart = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
 
@@ -56,11 +44,11 @@ shouwCount();
 
 // клик по кнопке в корзину
 $(".products .btn").click(function () {
- let price = parseFloat($(this).prev().text())//цена    
- let name = $(this).parent().prev().text()//название
+    let price = parseFloat($(this).prev().text())//цена    
+    let name = $(this).parent().prev().text()//название
     let picture = $(this).parents(".product").find("img").attr("src")
 
-let findProduct = cart.find(product => product.name == name)
+    let findProduct = cart.find(product => product.name == name)
 
     if (findProduct) {
         findProduct.amount++;
@@ -75,7 +63,7 @@ let findProduct = cart.find(product => product.name == name)
     }
     shouwCount();
 
-localStorage.setItem("cart",JSON.stringify(cart))
+    localStorage.setItem("cart", JSON.stringify(cart))
 
 });
 
@@ -94,7 +82,7 @@ cart.forEach(product => {
     <div>${product.price}</div>
 </div>`)
 });
-    
+
 function plus(elem) {
     let amount = $(elem).prev().text();
     amount++;
@@ -119,7 +107,7 @@ function minus(elem) {
     if (amount <= 0) {
         cart = cart.filter(product => product.name != name)
         $(elem).parents(".cart-product").remove();
- }
+    }
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
@@ -130,31 +118,33 @@ $(".order").submit(function (e) {
     let city = $(".order [name=city]").val();
     let address = $(".order [name=address]").val();
     let phone = $(".order [name=phone]").val();
-    if (address != "" && phone != ""){
-    let token = "6599005960:AAHSVMQsfFcpkToW4O796k37Nph2xPHiedY";
-    let chat = "1124848055"
+    if (address != "" && phone != "") {
+        // если адрес и телефон введены - отправляем в телеграм
+        let token = "6599005960:AAHSVMQsfFcpkToW4O796k37Nph2xPHiedY";
+        let chat = "1124848055"
 
 
-    let massage = `Город: ${city}, Адрес: ${address}, Телефон: ${phone}`;
-    
-    massage+= "%0A"
-    
-    massage +="Заказ: %0A"
+        let massage = `Город: ${city}, Адрес: ${address}, Телефон: ${phone}`;
 
-    cart.forEach(product => { 
-        massage += `${product.name}, ${ product.amount}, ${product.price} %0A`
-    })
-    let url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat}&text=${massage}`
+        massage += "%0A"
 
-    fetch(url)
+        massage += "Заказ: %0A"
 
-    cart = [];
-    $(".cart").text("")
-    shouwCount();
-    localStorage.clear()
-        $(".bg").removeClass("hidden")
+        cart.forEach(product => {
+            massage += `${product.name}, ${product.amount}, ${product.price} %0A`
+        })
+        
+        let url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat}&text=${massage}`
+        fetch(url)
+        // и очищаем корзину
+        cart = [];
+        $(".cart").text("")
+        shouwCount();
+        localStorage.clear()
+        $(".bg").removeClass("hidden") // показываем спасибо
     }
     else {
+        // если что-то не заполнено - выводим ошибку
         if (address == "") {
             $(".error-address").removeClass("hidden")
         }
@@ -165,7 +155,7 @@ $(".order").submit(function (e) {
 })
 
 
-
+// закрытие Спасибо
 $(".close").click(function () {
     $(".bg").addClass("hidden")
 })
